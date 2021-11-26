@@ -51,7 +51,6 @@ ui <- fluidPage(
                 
                 tabPanel(
                     title = "Manhattan plot",
-                    "Contents",
                     plotOutput("manhattan_plot")
                 ),
                 
@@ -163,13 +162,17 @@ server <- function(input, output) {
     })
     
     output$distribution_plot <- renderPlot({
-        if(input$descriptive_plot_type == "histogram") {
+        if(input$labelled_taxa == 'All') {
+            tibble(x=0,y=0, lab='Please select a focal taxon\n in the sidebar menu \nto see taxon information.') %>%
+                ggplot(aes(x=x,y=y,label=lab)) + 
+                geom_text() + theme_void()
+        } else if(input$descriptive_plot_type == "histogram") {
             plot_data <- if(input$nonzero_only) {
                 histogram_nonzero_data 
             } else {
                 histogram_data   
             }
-            distribution_plot <- make_histogram_plot(
+           make_histogram_plot(
                 histogram_data = plot_data,
                 taxon = input$labelled_taxa
             )
@@ -179,13 +182,11 @@ server <- function(input, output) {
             } else {
                 density_data   
             }
-            distribution_plot <- make_density_plot(
+            make_density_plot(
                 density_data = plot_data,
                 taxon = input$labelled_taxa
             )
         }
-        
-        distribution_plot
     }, height=600, width=600, res=120)
     
     output$prevalence_piechart <- renderPlot({

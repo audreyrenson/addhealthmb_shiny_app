@@ -142,7 +142,7 @@ density_nonzero_data <- read_csv("densities_nonzero.csv")[,-1] %>% mutate(tax_id
 
 
 DBS_BIOMARKERS <- c("HDL","LDL","Glucose","HbA1c", "C-reactive protein")
-COLOR_PALETTE <- RColorBrewer::brewer.pal(12, "Paired")[-11]
+COLOR_PALETTE <- RColorBrewer::brewer.pal(12, "Paired")
 TAXON_CHOICES <- table_s1 %>% 
   filter(abs(`log2 Fold Change`) > 0.8 & -log10(`S-value`) > 1.5) %>%
   mutate(Taxon = format_taxon_name(Taxon)) %>%
@@ -243,6 +243,9 @@ order_manhattan_data <- function(data) {
     ungroup() 
 }
 make_manhattan_plot <- function(data) {
+  if(length(unique(data$biomarker_label)) > length(COLOR_PALETTE))
+    stop('Too many taxa labels to display - please select a more stringent cutoff for log-fold-change or -log10(s-value).')
+  
   
   data %>% 
     ggplot(aes(x=order, y=neg_log_sval, fill=biomarker_label, group=biomarker_label)) + 
@@ -264,11 +267,11 @@ make_manhattan_plot <- function(data) {
 # Density / histogram stuff -----------------------------------------------
 
 make_density_plot <- function(density_data, taxon) {
-  density_data %>% 
+  density_data %>%
     filter(tax_id == taxon) %>%
     mutate(y = y/max(y)) %>%
-    ggplot(aes(x=x)) + 
-    geom_ribbon(aes(ymin=y, ymax=1), fill="white") + 
+    ggplot(aes(x=x)) +
+    geom_ribbon(aes(ymin=y, ymax=1), fill="white") +
     geom_ribbon(aes(ymin=0, ymax=y), fill="grey70", color="black")  +
     scale_x_continuous(labels = scales::percent_format(scale = 100)) +
     theme(axis.text.y = element_blank()) +
@@ -334,7 +337,7 @@ make_pie_chart <- function(pie_data) {
 filteredResultsData <- 
 full_raw_data %>% 
   make_key_variables() %>%
-  label_by_lfc_sval(0.8, 2) %>%
+  label_by_lfc_sval(1.1, 1.5) %>%
   collapse_biomarker_labels() %>%
   drop_taxa_labels_except("All")
 
