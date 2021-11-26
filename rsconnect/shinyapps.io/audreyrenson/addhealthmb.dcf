@@ -1,0 +1,13 @@
+name: addhealthmb
+title: addhealthmb
+username:
+account: audreyrenson
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 4084488
+bundleId: 5297879
+url: https://audreyrenson.shinyapps.io/addhealthmb/
+when: 1637968319.21687
+lastSyncTime: 1637968319.21687
+asMultiple: FALSE
+asStatic: FALSE
